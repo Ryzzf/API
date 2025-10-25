@@ -49,8 +49,10 @@ class _TampilanBeritaState extends State<TampilanBerita> {
 
   void _refreshArticles() {
     setState(() {
+      _showScrollToTopButton = false;
       _articlesFuture = Apiservice().fetchArticles();
     });
+    _scrollController.jumpTo(0);
   }
 
   void _scrollToTop() {
@@ -70,12 +72,18 @@ class _TampilanBeritaState extends State<TampilanBerita> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 81, 118, 205),
       appBar: AppBar(
-        title: const Text("Berita Terkini"),
+        backgroundColor: Colors.black,
+        title: const Text(
+          "Carita Ayeuna Barudak",
+          style: TextStyle(color: Colors.white),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _refreshArticles,
+            color: Colors.white,
           ),
         ],
       ),
@@ -88,20 +96,19 @@ class _TampilanBeritaState extends State<TampilanBerita> {
             );
           } else if (snapshot.hasError) {
             return Center(
-              child: Text("Error : ${snapshot.error}"),
+              child: Text("Error: ${snapshot.error}"),
             );
           } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-            final article = snapshot.data!;
-
+            final articles = snapshot.data!;
             return RefreshIndicator(
               onRefresh: () async {
                 _refreshArticles();
               },
               child: ListView.builder(
                 controller: _scrollController,
-                itemCount: article.length,
+                itemCount: articles.length,
                 itemBuilder: (context, index) {
-                  final berita = article[index];
+                  final berita = articles[index];
                   return Card(
                     child: Padding(
                       padding: const EdgeInsets.all(5),
